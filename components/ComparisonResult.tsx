@@ -23,7 +23,10 @@ export function ComparisonResult({ result, names, unit }: Props) {
       <p className="text-lg font-bold">
         {result.cheaper === "same"
           ? "同じ単価です"
-          : `${names[result.cheaper]}の方が${per}${result.difference}円安いです`}
+          : result.difference === "0"
+            ? // 差額が表示上0円になる場合、「0円安い」とは書かない
+              `${names[result.cheaper]}の方がわずかに安いです（${per}の差額は0.01円未満）`
+            : `${names[result.cheaper]}の方が${per}${result.difference}円安いです`}
       </p>
 
       <ul className="space-y-2">

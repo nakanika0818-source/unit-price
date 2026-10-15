@@ -144,7 +144,10 @@ describe("UnitPriceComparer：比較と結果表示", () => {
     expect(
       resultArea().getByText(/表示は小数第2位までのため、差が見えない場合があります/),
     ).toBeInTheDocument();
-    expect(resultArea().getByText(/商品Bの方が/)).toBeInTheDocument();
+    expect(
+      resultArea().getByText("商品Bの方がわずかに安いです（1個あたりの差額は0.01円未満）"),
+    ).toBeInTheDocument();
+    expect(resultArea().queryByText(/0円安い/)).toBeNull();
   });
 });
 
