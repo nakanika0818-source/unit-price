@@ -16,7 +16,8 @@
 
 ## 公開URL
 
-未追加（Vercel にはまだ公開していません）
+- アプリ：https://unit-price-amber.vercel.app/
+- GitHub：https://github.com/nakanika0818-source/unit-price
 
 ## 機能
 
