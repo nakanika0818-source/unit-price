@@ -61,6 +61,14 @@ export function UnitPriceComparer() {
       invalidateResult();
     };
 
+  // 単位・入力・エラー・結果（再比較の案内を含む）をすべて初期状態に戻す
+  const handleReset = () => {
+    setUnit(DEFAULT_UNIT);
+    setInputs({ A: EMPTY_PRODUCT, B: EMPTY_PRODUCT });
+    setErrors(NO_ERRORS);
+    setOutcome({ kind: "none" });
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const evaluation = evaluateForm(unit, inputs);
@@ -98,12 +106,21 @@ export function UnitPriceComparer() {
         ))}
       </div>
 
-      <button
-        type="submit"
-        className="h-12 w-full rounded-xl bg-accent-strong font-bold text-surface shadow-sm hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
-      >
-        比較する
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          className="h-12 flex-1 rounded-xl bg-accent-strong font-bold text-surface shadow-sm hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+        >
+          比較する
+        </button>
+        <button
+          type="button"
+          onClick={handleReset}
+          className="h-12 w-28 shrink-0 rounded-xl border border-field-border bg-surface font-bold shadow-sm hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-strong"
+        >
+          リセット
+        </button>
+      </div>
 
       <section
         aria-labelledby="result-heading"

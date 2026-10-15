@@ -236,3 +236,74 @@ describe("UnitPriceComparer：入力変更で古い結果を消す", () => {
     expect(resultArea().getByText("商品Bの方が1本あたり6円安いです")).toBeInTheDocument();
   });
 });
+
+describe("UnitPriceComparer：リセット", () => {
+  const placeholder = "入力して「比較する」を押すと、ここに結果が表示されます。";
+
+  function expectInitialState() {
+    expect(screen.getByRole("radio", { name: "個" })).toBeChecked();
+    for (const name of ["商品A", "商品B"] as const) {
+      expect(card(name).getByLabelText(/商品名/)).toHaveValue("");
+      expect(card(name).getByLabelText("価格（税込）")).toHaveValue("");
+      expect(card(name).getByLabelText("数量")).toHaveValue("");
+      expect(card(name).getByLabelText("価格（税込）")).not.toHaveAttribute("aria-invalid");
+      expect(card(name).getByLabelText("数量")).not.toHaveAttribute("aria-invalid");
+      expect(card(name).getByText("個")).toBeInTheDocument();
+    }
+    expect(resultArea().getByText(placeholder)).toBeInTheDocument();
+    expect(screen.queryByText(/⚠/)).toBeNull();
+  }
+
+  it("比較結果の表示中にリセットすると、入力・単位・結果が初期状態に戻る", async () => {
+    const user = userEvent.setup();
+    render(<UnitPriceComparer />);
+    await user.click(screen.getByRole("radio", { name: "g" }));
+    await fill(user, "商品A", { name: "粉A", price: "300", quantity: "0.5" });
+    await fill(user, "商品B", { name: "粉B", price: "700", quantity: "1.25" });
+    await user.click(screen.getByRole("button", { name: "比較する" }));
+    expect(resultArea().getByText(/安いです/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "リセット" }));
+    expectInitialState();
+  });
+
+  it("入力エラーの表示中にリセットすると、エラーが消え、新たなエラーも出ない", async () => {
+    const user = userEvent.setup();
+    render(<UnitPriceComparer />);
+    await fill(user, "商品A", { price: "0" });
+    await user.click(screen.getByRole("button", { name: "比較する" }));
+    expect(resultArea().getByText("⚠ 入力内容を確認してください")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "リセット" }));
+    expectInitialState();
+  });
+
+  it("再比較の案内が出ているときにリセットすると、案内も消える", async () => {
+    const user = userEvent.setup();
+    render(<UnitPriceComparer />);
+    await fill(user, "商品A", { price: "1200", quantity: "50" });
+    await fill(user, "商品B", { price: "1800", quantity: "100" });
+    await user.click(screen.getByRole("button", { name: "比較する" }));
+    await fill(user, "商品A", { price: "0" });
+    expect(resultArea().getByText(/結果を消しました/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "リセット" }));
+    expectInitialState();
+    expect(resultArea().queryByText(/結果を消しました/)).toBeNull();
+  });
+
+  it("リセット後も、比較と入力変更で結果を消す動作は変わらない", async () => {
+    const user = userEvent.setup();
+    render(<UnitPriceComparer />);
+    await fill(user, "商品A", { price: "999", quantity: "9" });
+    await user.click(screen.getByRole("button", { name: "リセット" }));
+
+    await fill(user, "商品A", { price: "1200", quantity: "50" });
+    await fill(user, "商品B", { price: "1800", quantity: "100" });
+    await user.click(screen.getByRole("button", { name: "比較する" }));
+    expect(resultArea().getByText("商品Bの方が1個あたり6円安いです")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("radio", { name: "枚" }));
+    expect(resultArea().getByText(/結果を消しました/)).toBeInTheDocument();
+  });
+});

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現状
 
-Next.js 16.4.1 の雛形、`lib/` の入力チェックと単価計算、入力画面、比較・結果表示・エラー表示、入力変更で結果を消す処理まで実装済み。リセットはまだない。
+Next.js 16.4.1 の雛形、`lib/` の入力チェックと単価計算、入力画面、比較・結果表示・エラー表示、入力変更で結果を消す処理、リセットまで実装済み（MVP の F-01〜F-05）。デザインの仕上げ・README・公開はまだ。
 
 ## コマンド
 
@@ -32,6 +32,7 @@ Vitest の設定は `vitest.config.mts`。既定は Node 環境で、`@/` のパ
 
 - `UnitPriceComparer.tsx`（`'use client'`）：単位・入力・エラー・結果（`outcome`：none / result / stale）を state で持つ唯一の場所。`<form>` の submit で比較するため、Enter キーでも比較できる。
   - 結果を表示した後に入力（商品名を含む）や単位を変えると、`outcome` を `stale` にして結果を消し、再比較を促す。
+  - リセット（`handleReset`）は単位を「個」に戻し、入力・エラー・`outcome` をすべて初期値に戻す。確認ダイアログは出さない。
   - 編集した欄のエラーだけを消す。単位を変えたときは、両商品の数量のエラーを消す。単位を切り替えても入力値は消さない。
 - `ProductCard.tsx`：1商品分の入力欄で、状態は持たない。エラーは `aria-invalid` と `aria-describedby` で入力欄に結び付ける。`UnitSelect.tsx`：単位のラジオボタン。`ComparisonResult.tsx`：結果の表示。
 - 安い方は「安い」バッジ、エラーは「⚠」と文章で示し、色だけに頼らない。
