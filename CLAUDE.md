@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現状
 
-Next.js 16.4.1 の雛形、`lib/` の入力チェックと単価計算、入力画面（単位選択と商品カード）まで実装済み。比較ボタン・結果表示・リセットはまだない。
+Next.js 16.4.1 の雛形、`lib/` の入力チェックと単価計算、入力画面、比較・結果表示・エラー表示、入力変更で結果を消す処理まで実装済み。リセットはまだない。
 
 ## コマンド
 
@@ -25,12 +25,16 @@ Vitest の設定は `vitest.config.mts`。既定は Node 環境で、`@/` のパ
 - `units.ts`：単位の一覧と、小数の数量を許可する単位（mL・g）。
 - `validation.ts`：入力文字列（全角は NFKC で半角化）を検証し、価格は整数、数量は1000倍した整数（`quantityScaled`）で返す。エラーは日本語メッセージ付き。
 - `compare.ts`：`compareProducts(a, b)` が判定・表示用の文字列・`hiddenByRounding`（表示上は差が見えない）を返す。判定は `価格A × 数量B` と `価格B × 数量A` の整数比較で行う。表示用の単価・差額は BigInt の分数から小数第2位で1回だけ四捨五入し、末尾の0を省いて3桁区切りにする。差額は「丸めた単価どうしの差」ではない。
-- UI 側は `validation.ts` → `compareProducts` の順に呼び、文字列を数値に変える処理を独自に書かないこと。
+- `form.ts`：`evaluateForm(unit, {A, B})` が2商品分の入力チェックと `compareProducts` をまとめて行い、結果と表示名、または商品・欄ごとのエラーを返す。入力の型 `ProductInput` と、空欄時の表示名（`displayName`）もここにある。
+- UI 側は `evaluateForm` を呼ぶだけにし、文字列を数値に変える処理を独自に書かないこと。
 
 ## 画面の構成（`components/`）
 
-- `UnitPriceComparer.tsx`（`'use client'`）：単位と商品A・Bの入力を state で持つ唯一の場所。入力値は文字列のまま持ち、比較時に `lib/validation.ts` に渡す。単位を切り替えても入力値は消さない。
-- `UnitSelect.tsx`：単位のラジオボタン。`ProductCard.tsx`：1商品分の入力欄で、状態は持たない。
+- `UnitPriceComparer.tsx`（`'use client'`）：単位・入力・エラー・結果（`outcome`：none / result / stale）を state で持つ唯一の場所。`<form>` の submit で比較するため、Enter キーでも比較できる。
+  - 結果を表示した後に入力（商品名を含む）や単位を変えると、`outcome` を `stale` にして結果を消し、再比較を促す。
+  - 編集した欄のエラーだけを消す。単位を変えたときは、両商品の数量のエラーを消す。単位を切り替えても入力値は消さない。
+- `ProductCard.tsx`：1商品分の入力欄で、状態は持たない。エラーは `aria-invalid` と `aria-describedby` で入力欄に結び付ける。`UnitSelect.tsx`：単位のラジオボタン。`ComparisonResult.tsx`：結果の表示。
+- 安い方は「安い」バッジ、エラーは「⚠」と文章で示し、色だけに頼らない。
 - 入力欄は `type="text"` と `inputMode` を組み合わせる（`type="number"` は使わない）。単位が mL・g のときは `decimal`、それ以外は `numeric`。
 
 ## 雛形の設定メモ

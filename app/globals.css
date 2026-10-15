@@ -8,6 +8,7 @@
   --accent-strong: #1d4ed8;
   --muted: #5b6472;
   --field-border: #7c8ca6;
+  --error: #b42318;
 }
 
 @theme inline {
@@ -18,6 +19,7 @@
   --color-accent-strong: var(--accent-strong);
   --color-muted: var(--muted);
   --color-field-border: var(--field-border);
+  --color-error: var(--error);
   --font-sans: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI",
     "Meiryo", "Noto Sans JP", sans-serif;
 }
