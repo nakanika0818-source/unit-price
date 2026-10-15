@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現状
 
-Next.js 16.4.1 の雛形、タイトルと説明だけのトップ画面、`lib/` の入力チェックと単価計算（テスト付き）まで実装済み。入力画面はまだない。
+Next.js 16.4.1 の雛形、`lib/` の入力チェックと単価計算、入力画面（単位選択と商品カード）まで実装済み。比較ボタン・結果表示・リセットはまだない。
 
 ## コマンド
 
@@ -18,7 +18,7 @@ npx vitest run lib/compare.test.ts      # 1ファイルだけ実行
 npx vitest run -t "完成条件"            # テスト名で絞り込んで実行
 ```
 
-Vitest は設定ファイルなしの Node 環境で動かしている。コンポーネントのテストを足すときは、`node_modules/next/dist/docs/01-app/02-guides/testing/vitest.md` に従って jsdom などを追加する。
+Vitest の設定は `vitest.config.mts`。既定は Node 環境で、`@/` のパスは Vite 組み込みの `resolve.tsconfigPaths` で解決する（`vite-tsconfig-paths` プラグインは不要）。コンポーネントのテストはファイル先頭に `// @vitest-environment jsdom` を書き、`@testing-library/jest-dom/vitest` を import して、`afterEach(cleanup)` を呼ぶ（グローバル設定を使っていないため、自動では片付かない）。
 
 ## ロジックの構成（`lib/`）
 
@@ -26,6 +26,12 @@ Vitest は設定ファイルなしの Node 環境で動かしている。コン�
 - `validation.ts`：入力文字列（全角は NFKC で半角化）を検証し、価格は整数、数量は1000倍した整数（`quantityScaled`）で返す。エラーは日本語メッセージ付き。
 - `compare.ts`：`compareProducts(a, b)` が判定・表示用の文字列・`hiddenByRounding`（表示上は差が見えない）を返す。判定は `価格A × 数量B` と `価格B × 数量A` の整数比較で行う。表示用の単価・差額は BigInt の分数から小数第2位で1回だけ四捨五入し、末尾の0を省いて3桁区切りにする。差額は「丸めた単価どうしの差」ではない。
 - UI 側は `validation.ts` → `compareProducts` の順に呼び、文字列を数値に変える処理を独自に書かないこと。
+
+## 画面の構成（`components/`）
+
+- `UnitPriceComparer.tsx`（`'use client'`）：単位と商品A・Bの入力を state で持つ唯一の場所。入力値は文字列のまま持ち、比較時に `lib/validation.ts` に渡す。単位を切り替えても入力値は消さない。
+- `UnitSelect.tsx`：単位のラジオボタン。`ProductCard.tsx`：1商品分の入力欄で、状態は持たない。
+- 入力欄は `type="text"` と `inputMode` を組み合わせる（`type="number"` は使わない）。単位が mL・g のときは `decimal`、それ以外は `numeric`。
 
 ## 雛形の設定メモ
 

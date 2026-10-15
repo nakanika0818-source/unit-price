@@ -29,3 +29,17 @@
 - 本番への影響：なし。lint 用の devDependency の中だけにあり、`npm audit --omit=dev` は0件。`next build` の成果物にも含まれない。また、攻撃者が用意した glob パターンを処理する場面がないため、開発時の影響も実質的にない。
 - `npm audit fix --force` を実行すると `eslint-config-next@14.2.35` に戻ってしまい、Next.js 16 と合わなくなる。そのため実行しない。`eslint-config-next` の更新を待つ（2026-10-15 時点の最新は 16.4.1 で、これも該当する）。
 - Vitest を追加しても件数は変わらなかった。
+
+## 2026-10-15 単位選択と商品カード（F-01・F-02）
+
+- **操作の確認方法**：単位を切り替えても値が残るかどうかは、スクリーンショットでは確かめられない。
+  → Next.js 同梱ガイド（`testing/vitest.md`）に沿って jsdom と Testing Library を入れ、コンポーネントテストで確認した。
+- **vite-tsconfig-paths の警告**：ガイドどおりに `vite-tsconfig-paths` を入れたところ、Vite から「パス解決は組み込みの `resolve.tsconfigPaths` で対応済み」と警告が出た。
+  → プラグインを削除し、`resolve: { tsconfigPaths: true }` に置き換えた。
+- **jest-dom の判定が使えない**：`toBeChecked` などの判定は Testing Library 本体には含まれていない。
+  → `@testing-library/jest-dom` を追加し、テストファイルで `@testing-library/jest-dom/vitest` を import した。
+- **入力欄の枠線が見えにくい**：最初は淡いブルー（#dbeafe）の枠線にしたが、アイボリーの背景とほとんど区別できなかった。
+  → 入力欄だけ `--field-border: #7c8ca6` に変えた。また、「円」と単位表示の幅を揃えて、入力欄の右端を揃えた。
+- **確認結果**：`npm test` 34件成功、lint・型チェック・本番ビルド成功。375px 幅（iframe で撮影）では縦並び、1100px 幅では横並びになり、横スクロールが出ないことをスクリーンショットで確認した。
+  - `app` `components` `lib` に console・localStorage・sessionStorage・Cookie・fetch を使ったコードがないことを grep で確認した。
+  - npm audit は high 5件のままで、増えていない（すべて lint 用の依存の中）。

@@ -1,3 +1,5 @@
+import { UnitPriceComparer } from "@/components/UnitPriceComparer";
+
 export default function Home() {
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:py-12">
@@ -13,6 +15,7 @@ export default function Home() {
           価格面での比較です。用途・品質なども確認してください。
         </p>
       </header>
+      <UnitPriceComparer />
     </main>
   );
 }
