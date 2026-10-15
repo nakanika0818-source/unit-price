@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現状
 
-MVP の機能（F-01〜F-05）、デザインの仕上げ、README まで完了。GitHub への push と Vercel への公開はまだ。スクリーンショットと公開 URL は README に未追加。
+MVP の機能（F-01〜F-05）、デザインの仕上げ、README（スクリーンショット `screenshot.png` を含む）まで完了。GitHub への push と Vercel への公開はまだで、README の公開 URL は未追加。
+
+`screenshot.png` は、本番ビルド（`next start`）を横幅 820px・解像度2倍で撮影したもの。開発サーバーで撮ると Next.js の「N」ボタンが写り込むため、撮り直すときも本番ビルドを使う。
 
 `requirements.md` §9 の完成条件の確認状況（2026-10-15 時点。詳細は DEVLOG.md）：
 
