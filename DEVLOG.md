@@ -9,4 +9,5 @@
 - **雛形の lint コマンド**：Next.js 16 の雛形では `"lint": "eslint"` になっていた（`next lint` ではない）。
 - **375px のスクリーンショットで右端が切れて見えた**：ヘッドレス Edge の `--window-size=375,...` では、ウィンドウが最小幅より狭くならず、実際の表示幅が375pxより広くなっていた。
   → 幅375pxの iframe の中にページを表示して撮影し直し、はみ出しがないことを確認した。
+- **AGENTS.md が自動で作られた**：`--no-agents-md` を付けて作成したが、`next dev` を起動したときに Next.js 16 が `AGENTS.md` を作成した（`node_modules/next/dist/server/lib/generate-agent-files.js` で確認）。消しても再作成されるため、コミットに含めた。対象は `AGENTS.md` だけで、`CLAUDE.md` は変更されていない。
 - **npm install の警告**：high の脆弱性が5件と報告された。また、`unrs-resolver` の postinstall スクリプトが許可されていないという警告が出た。lint とビルドには影響がなかった。`npm audit fix --force` は大きな変更を含むため実行していない（未対応）。
