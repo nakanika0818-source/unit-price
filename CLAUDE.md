@@ -4,17 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現状
 
-Next.js 16.4.1（create-next-app で作成）の雛形と、タイトル・説明だけのトップ画面まで実装済み。入力欄・計算機能はまだない。
+Next.js 16.4.1 の雛形、タイトルと説明だけのトップ画面、`lib/` の入力チェックと単価計算（テスト付き）まで実装済み。入力画面はまだない。
 
 ## コマンド
 
 ```
-npm run dev     # 開発サーバー（http://localhost:3000）
-npm run build   # 本番ビルド
-npm run lint    # ESLint（Next.js 16 では `next lint` ではなく `eslint`）
+npm run dev          # 開発サーバー（http://localhost:3000）
+npm run build        # 本番ビルド
+npm run lint         # ESLint（Next.js 16 では `next lint` ではなく `eslint`）
+npm test             # Vitest を1回実行（vitest run）
+npm run test:watch   # Vitest をウォッチモードで実行
+npx vitest run lib/compare.test.ts      # 1ファイルだけ実行
+npx vitest run -t "完成条件"            # テスト名で絞り込んで実行
 ```
 
-テストはまだ導入していない（Vitest を導入予定）。導入後に、テスト実行と単一テストの実行方法をここに追記すること。
+Vitest は設定ファイルなしの Node 環境で動かしている。コンポーネントのテストを足すときは、`node_modules/next/dist/docs/01-app/02-guides/testing/vitest.md` に従って jsdom などを追加する。
+
+## ロジックの構成（`lib/`）
+
+- `units.ts`：単位の一覧と、小数の数量を許可する単位（mL・g）。
+- `validation.ts`：入力文字列（全角は NFKC で半角化）を検証し、価格は整数、数量は1000倍した整数（`quantityScaled`）で返す。エラーは日本語メッセージ付き。
+- `compare.ts`：`compareProducts(a, b)` が判定・表示用の文字列・`hiddenByRounding`（表示上は差が見えない）を返す。判定は `価格A × 数量B` と `価格B × 数量A` の整数比較で行う。表示用の単価・差額は BigInt の分数から小数第2位で1回だけ四捨五入し、末尾の0を省いて3桁区切りにする。差額は「丸めた単価どうしの差」ではない。
+- UI 側は `validation.ts` → `compareProducts` の順に呼び、文字列を数値に変える処理を独自に書かないこと。
 
 ## 雛形の設定メモ
 
