@@ -4,9 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 現状
 
-このリポジトリにはまだコードがなく、`requirements.md`（要件定義書）だけがある。
+Next.js 16.4.1（create-next-app で作成）の雛形と、タイトル・説明だけのトップ画面まで実装済み。入力欄・計算機能はまだない。
 
-ビルド・lint・テストのコマンドはまだない。Next.js プロジェクトを作成した後、`package.json` の scripts（dev / build / lint / test、単一テストの実行方法を含む）をこのファイルに追記すること。
+## コマンド
+
+```
+npm run dev     # 開発サーバー（http://localhost:3000）
+npm run build   # 本番ビルド
+npm run lint    # ESLint（Next.js 16 では `next lint` ではなく `eslint`）
+```
+
+テストはまだ導入していない（Vitest を導入予定）。導入後に、テスト実行と単一テストの実行方法をここに追記すること。
+
+## 雛形の設定メモ
+
+- `next.config.ts` は create-next-app の生成どおりで、`cacheComponents` と `partialPrefetching` が有効。Tailwind CSS は Turbopack のローダー（`@tailwindcss/turbopack`）で読み込んでいる。
+- フォントは Geist を外し、`app/globals.css` で日本語のシステムフォントを指定している。外部フォントは取得しない。
+- 色は `app/globals.css` の CSS 変数（`background` / `surface` / `accent` / `accent-strong`）を Tailwind のクラス名として使う。
 
 ## アプリ概要
 
